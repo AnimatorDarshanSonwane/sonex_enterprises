@@ -1,0 +1,13 @@
+{
+  "name": "sonex-enterprises-client-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sonex Enterprises - 360° Luxury Couture Client Platform",
+  "scripts": {
+    "install:frontend": "npm --prefix frontend install",
+    "install:backend": "npm --prefix backend install",
+    "build": "npm --prefix frontend run build",
+    "dev": "npm --prefix frontend run dev",
+    "start": "npm --prefix backend start"
+  }
+}

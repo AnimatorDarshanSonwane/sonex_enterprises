@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        (request.auth.token.email != null && request.auth.token.email.matches(".*admin.*") && request.auth.token.email_verified == true) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // -------------------------------------------------------------------------
+    // Products Catalog Collection (Publicly readable, Admin managed)
+    // -------------------------------------------------------------------------
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // User Profiles, Carts, & Wishlists Collection
+    // STRICT DATA ISOLATION: A customer can ONLY read, write, or modify their own data.
+    // Zero access to other users' profiles, shopping bags, or wishlists.
+    // -------------------------------------------------------------------------
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+
+      match /{document=**} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Orders Collection
+    // STRICT DATA ISOLATION:
+    // - Customers can create orders tied ONLY to their own request.auth.uid.
+    // - Customers can ONLY read orders where resource.data.userId == request.auth.uid.
+    // - Customers can update their own order (e.g. submit payment UTR proof).
+    // - Customers CANNOT read, write, update, or delete another customer's orders.
+    // - Admin portal has full oversight to review, confirm payments, and update logistics.
+    // -------------------------------------------------------------------------
+    match /orders/{orderId} {
+      // 1. Create: Must be authenticated and order.userId must match current auth UID
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      // 2. Read: Only the order owner or authenticated admin can read
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+
+      // 3. Update: 
+      // - Customer can update only their own order (cannot alter the order.userId ownership)
+      // - Admin can update any order (e.g. approve payment, update shipping status)
+      allow update: if isAuthenticated() && (
+        (resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid) ||
+        isAdmin()
+      );
+
+      // 4. Delete: Strictly restricted to Admin
+      allow delete: if isAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // Store Settings (e.g. Social Links, Footer configuration)
+    // Publicly readable so client store displays real-time admin config.
+    // Writable only by authenticated Admins.
+    // -------------------------------------------------------------------------
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // Admin Directory Collection (Protected)
+    // -------------------------------------------------------------------------
+    match /admins/{adminId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

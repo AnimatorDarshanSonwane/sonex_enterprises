@@ -1,0 +1,22 @@
+{
+  "short_name": "Sonex Atelier",
+  "name": "Sonex Enterprises — 360° Luxury Dress Atelier",
+  "description": "Direct Manufacturer & Atelier for Haute Couture, Designer Dresses and Lehengas with 360° interactive turnaround fitting.",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#d4af37",
+  "display": "standalone",
+  "orientation": "portrait"
+}

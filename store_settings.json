@@ -1,0 +1,25 @@
+{
+  "checkoutPricing": {
+    "shippingPrice": 49,
+    "isFreeShipping": false,
+    "freeShippingThreshold": 25000,
+    "enableFreeShippingThreshold": true,
+    "gstPercentage": 5,
+    "gstCalculationMode": "product_plus_shipping",
+    "updatedAt": "2026-09-30T01:25:00.000Z"
+  },
+  "socialLinks": {
+    "instagram": { "url": "https://instagram.com/sonexenterprises", "enabled": true },
+    "youtube": { "url": "https://youtube.com/@sonexenterprises", "enabled": true },
+    "twitter": { "url": "https://x.com/sonexenterprises", "enabled": true },
+    "facebook": { "url": "https://facebook.com/sonexenterprises", "enabled": true }
+  },
+  "platformSettings": {
+    "upiId": "9404692375@ybl",
+    "merchantName": "Sonex Enterprises Luxury Couture",
+    "supportPhone": "+91 9404692375",
+    "supportEmail": "concierge@sonexenterprises.com",
+    "suratFactoryPoolingEnabled": true,
+    "refundPolicyDays": 30
+  }
+}
